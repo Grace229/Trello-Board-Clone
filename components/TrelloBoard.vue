@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import type { Column } from '../types/index.ts';
+import type { Column, Task } from '../types/index.ts';
 import { nanoid } from "nanoid";
+import TrelloBoardTask from './TrelloBoardTask.vue';
+import draggable from 'vuedraggable';
+import NewTask from './NewTask.vue';
 const columns = ref<Column[]>([
     {
         id: nanoid(),
@@ -23,22 +26,52 @@ const columns = ref<Column[]>([
             },
         ]
     },
-    {id: nanoid(), title: "Selected for Dev", tasks: []},
-    {d: nanoid(), title: "In Progress", tasks: []},
-    {d: nanoid(), title: "QA", tasks: []},
-    {d: nanoid(), title: "Complete", tasks: []},
-])
+    { id: nanoid(), title: "Selected for Dev", tasks: [] },
+    { id: nanoid(), title: "In Progress", tasks: [] },
+    { id: nanoid(), title: "QA", tasks: [] },
+    { id: nanoid(), title: "Complete", tasks: [] },
+]);
+const alt = useKeyModifier("Alt")
 
 </script>
 <template>
     <div class="flex gap-4 overflow-x-auto items-start">
-        <div v-for="column in columns" :key="column.id" class="column bg-gray-200 p-5 rounded min-w-[250px]">
-<header>
-    {{ column.title }}
-</header>
-<p v-for="task in column.tasks" :key="task.id">
-    {{ task.title }}
-</p>
+        <draggable 
+        v-model="columns" 
+        group="columns" 
+        :animation="150"
+        handle=".drag-handle"
+        item-key="id"
+        class="flex gap-4 overflow-x-auto items-start"
+        >
+        <template #item="{element: column} : {element: Column}">
+            <div  class="column bg-gray-200 p-5 rounded min-w-[250px]">
+            <header class="font-bold mb-2">
+              <DragHandle />
+                {{ column.title }}
+            </header>
+            <draggable 
+        v-model="column.tasks" 
+        :group="{name: 'tasks', pull: alt ?  'clone' : true}" 
+        handle=".drag-handle"
+        :animation="150"
+        item-key="id"
+        >
+        <template #item="{element: task} : {element: Task}">
+            
+            <div>
+                <TrelloBoardTask 
+                :task="task"
+                 @delete="column.tasks = column.tasks.filter((t) => t.id !== $event)" />
+            </div>
+        </template>
+            </draggable>
+          
+            <footer>
+                <NewTask @add="column.tasks.push($event)"  />
+            </footer>
         </div>
+        </template>
+        </draggable>
     </div>
 </template>
