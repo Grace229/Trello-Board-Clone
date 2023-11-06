@@ -60,7 +60,9 @@ const alt = useKeyModifier("Alt")
         <template #item="{element: task} : {element: Task}">
             
             <div>
-                <TrelloBoardTask :task="task" />
+                <TrelloBoardTask 
+                :task="task"
+                 @delete="column.tasks = column.tasks.filter((t) => t.id !== $event)" />
             </div>
         </template>
             </draggable>
@@ -73,21 +75,3 @@ const alt = useKeyModifier("Alt")
         </draggable>
     </div>
 </template>
-<style>
-/* draggable class added to element when you first click on it to drag it */
-.sortable-chosen{
-
-}
-/* applies when you start moving the item */
-.sortable-drag .task{
-transform: rotate(5deg);
-}
-/* target element that are beneath the card */
-.sortable-ghost .task{
-position: relative;
-}
-.sortable-ghost .task::after{
-content: "";
-@apply absolute top-0 bottom-0 left-0 right-0 bg-slate-300 rounded
-}
-</style>
