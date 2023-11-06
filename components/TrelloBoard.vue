@@ -3,6 +3,7 @@ import type { Column, Task } from '../types/index.ts';
 import { nanoid } from "nanoid";
 import TrelloBoardTask from './TrelloBoardTask.vue';
 import draggable from 'vuedraggable';
+import NewTask from './NewTask.vue';
 const columns = ref<Column[]>([
     {
         id: nanoid(),
@@ -57,15 +58,36 @@ const alt = useKeyModifier("Alt")
         item-key="id"
         >
         <template #item="{element: task} : {element: Task}">
-            <TrelloBoardTask :task="task" />
+            
+            <div>
+                <TrelloBoardTask :task="task" />
+            </div>
         </template>
             </draggable>
           
             <footer>
-                <button class="text-gray-500">+ Add a Card</button>
+                <NewTask @add="column.tasks.push($event)"  />
             </footer>
         </div>
         </template>
         </draggable>
     </div>
 </template>
+<style>
+/* draggable class added to element when you first click on it to drag it */
+.sortable-chosen{
+
+}
+/* applies when you start moving the item */
+.sortable-drag .task{
+transform: rotate(5deg);
+}
+/* target element that are beneath the card */
+.sortable-ghost .task{
+position: relative;
+}
+.sortable-ghost .task::after{
+content: "";
+@apply absolute top-0 bottom-0 left-0 right-0 bg-slate-300 rounded
+}
+</style>
