@@ -60,7 +60,7 @@ function createColumn(){
 }
 </script>
 <template>
-    <div class="flex gap-4 overflow-x-auto items-start">
+    <div class="flex gap-4 overflow-x-auto items-start h-screen">
         <draggable 
         v-model="columns" 
         group="columns" 
